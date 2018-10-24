@@ -34,7 +34,7 @@ const web3 = new (require('web3'))("http://127.0.0.1:8545");
 // this is where the SS node is listening for requests
 const ss_endpoint_uri = "http://127.0.0.1:8090";
 
-ss = SecretStore(web3, ss_endpoint_uri);
+const ss = new secretstore.SecretStore(web3, ss_endpoint_uri);
 
 // secretstore RPC API calls
 ss.method..
