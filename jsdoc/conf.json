@@ -1,0 +1,32 @@
+{   
+    "recurseDepth": 10,
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+        "include": "./lib/",
+        "exclude": "./lib/utils.js"
+    },
+    "plugins": [],
+    "templates": {
+        "referenceTitle": "EWF's Node package for Secret Store",
+        "cleverLinks": true,
+        "monospaceLinks": true,
+        "disableSort": false,
+        "collapse": true,
+        "default": {
+            "outputSourceFiles": true
+        },
+        "resources": {
+            "Parity Secret Store API,": "https://wiki.parity.io/JSONRPC-secretstore-module",
+            "Parity WIKI - Secret Store": "https://wiki.parity.io/Secret-Store"
+        }
+    },
+    "opts": {
+        "template": "../node_modules/jsdoc-template",
+        "encoding": "utf8",
+        "destination": "./jsdoc/src/",
+        "recurse": true,
+        "package": "./package.json"
+    }
+}

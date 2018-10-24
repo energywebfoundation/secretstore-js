@@ -1,0 +1,49 @@
+{
+  "name": "secretstore",
+  "version": "0.0.1",
+  "description": "Node package for Parity's Secret Store JSON-RPC API calls and sessions.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "web3": "^1.0.0-beta.36"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "crypto-js": "^3.1.9-1",
+    "jsdoc": "^3.5.5",
+    "jsdoc-template": "git+https://github.com/ngyam/jsdoc-template.git",
+    "mocha": "^5.2.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "start": "cd nodes_ss_dev && ./start.sh",
+    "stop": "cd nodes_ss_dev && ./stop.sh",
+    "clear": "cd nodes_ss_dev && ./clear.sh",
+    "docs": "./jsdoc/docgen.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/energywebfoundation/secretstore-js.git"
+  },
+  "keywords": [
+    "secret",
+    "store",
+    "web3",
+    "key",
+    "management",
+    "node",
+    "energy",
+    "web",
+    "foundation",
+    "ewf",
+    "parity"
+  ],
+  "author": "Adam Nagy (ngy.am.zs@gmail.com)",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/energywebfoundation/secretstore-js/issues"
+  },
+  "homepage": "https://github.com/energywebfoundation/secretstore-js#readme"
+}

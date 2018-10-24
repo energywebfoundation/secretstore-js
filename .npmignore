@@ -64,20 +64,14 @@ typings/
 parity
 
 # node data
-nodes_ss_dev/db.dev_ss_alice/cache/
-nodes_ss_dev/db.dev_ss_alice/chains/
-nodes_ss_dev/db.dev_ss_alice/network/
-nodes_ss_dev/db.dev_ss_alice/secretstore/
-nodes_ss_dev/db.dev_ss_alice/signer/
+nodes_ss_dev/
 
-nodes_ss_dev/db.dev_ss_bob/cache/
-nodes_ss_dev/db.dev_ss_bob/chains/
-nodes_ss_dev/db.dev_ss_bob/network/
-nodes_ss_dev/db.dev_ss_bob/secretstore/
-nodes_ss_dev/db.dev_ss_bob/signer/
+# doc
+docs/
+jsdoc/
 
-nodes_ss_dev/db.dev_ss_charlie/cache/
-nodes_ss_dev/db.dev_ss_charlie/chains/
-nodes_ss_dev/db.dev_ss_charlie/network/
-nodes_ss_dev/db.dev_ss_charlie/secretstore/
-nodes_ss_dev/db.dev_ss_charlie/signer/
+# contracts
+contracts/
+
+# tests
+test/
