@@ -1,0 +1,77 @@
+[parity]
+base_path = "db.dev_ss_bob"
+chain = "dev"
+
+[ui]
+disable = false
+
+[rpc]
+disable = false
+apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts", "private", "secretstore"]
+port = 8547
+cors = ["*"]
+
+[ipc]
+disable = true
+
+[websockets]
+disable = true
+
+[dapps]
+disable = false
+
+[ipfs]
+enable = false
+
+[network]
+port = 30304
+#node_key = "721d7501b6cbc7f7f3b325607702bf9d6bd467b3"
+bootnodes = [
+    "enode://170ec31c16bc17cb3d73a29e6ecc14d4fbca35cca6cb7d12726a292aa06b1969a59a4c97090b650eb1c3dfc9fb2c736fbe8310c0323b6b6bf87735860dd1691d@127.0.0.1:30303",
+    "enode://47f5f3de6be5d414da5c0962877634f5a144d3d39eaa504fdbfb97f5f43a851e3c29e7a9bd480316485676748c0b3eb30cbb5ae741a19f465a45ce06027e9815@127.0.0.1:30305"
+]
+
+[snapshots]
+disable_periodic = true
+
+[secretstore]
+disable_auto_migrate = true
+#admin_public = "002cad13cf0aeb7f5f7c4cda5dd677902c24f2167e0edefdcc4434286825746cf8d46d705b150b006c3a96c905cd9d1a88e4ed61b99212836011c627959fb431"
+admin_public = "39bf56d6183d8e266aa653265ecb6d250d3a8eddda0ffb5ec2a3a0049ca2050ed5e755b2c5e7e9a0adea988cc81f2f7e2084294555fbd10e21fb2060a3a18910"
+disable = false
+disable_http = false
+#acl_contract = "731a10897d267e19B34503aD902d0A29173Ba4B1"
+acl_contract = "none"
+server_set_contract = "none"
+#disable_acl_check = true
+self_secret = "6c4b8b199a41b721e0a95df9860cf0a18732e76d"
+interface = "all"
+port = 8085
+http_interface = "all"
+http_port = 8091    
+path = "db.dev_ss_bob/secretstore"
+nodes = [
+    "22417f6b9ecbaafbd10f33797161aaf0b8e74a0ce3aea19bb32b92c081e82780346c6f4f7aa619a8b3841f057dac8d31b8f75a241357420b25e9420b3918ac4b@127.0.0.1:8083",
+    "413ecc85852cc4087ac8527c76be43cba57a5015f7a48da29c9c9123877474f8ac2406657274abfeee68bfc31c791d44358830e5983a2dba8b4235bd03253f0e@127.0.0.1:8085",
+    "dc7452498e4b90f1c20178a5ea73c9d38626cc3d2199b4a110ec88fdb000be6f7da81779a4bbd743772eada02d523db54f1bea31cdc915c20ec377eb5336be81@127.0.0.1:8087"
+]
+
+[misc]
+logging = "transaction_pool=trace,txqueue=trace,ethcore_private_tx=trace,own_tx=trace"
+log_file = "./db.dev_ss_bob/parity.log"
+color = true
+
+#[mining]
+#gas_floor_target = "8000000"
+
+[account]
+#unlock = ["0x721d7501b6cbc7f7f3b325607702bf9d6bd467b3"]
+password = ["bob.pwd"]
+
+[private_tx]
+sstore_url = "http://127.0.0.1:8091"
+enabled = true
+account = "0x6c4b8b199a41b721e0a95df9860cf0a18732e76d"
+signer = "0x6c4b8b199a41b721e0a95df9860cf0a18732e76d"
+validators= ["0x6c4b8b199a41b721e0a95df9860cf0a18732e76d"]
+passwords = "bob.pwd"
