@@ -69,9 +69,12 @@ nodes_ss_dev/
 # doc
 docs/
 jsdoc/
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 
 # contracts
 contracts/
 
 # tests
 test/
+test.js
