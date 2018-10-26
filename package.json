@@ -43,7 +43,7 @@
     "parity"
   ],
   "author": "Adam Nagy (ngy.am.zs@gmail.com)",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/energywebfoundation/secretstore-js/issues"
   },
