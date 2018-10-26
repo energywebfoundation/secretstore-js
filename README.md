@@ -1,5 +1,5 @@
 # Secret Store nodejs package
-This is a Node JS package for interacting with Parity's Secret Store.
+This is a [Node JS package](https://www.npmjs.com/package/secretstore) for interacting with Parity's Secret Store.
 It is an abstraction layer (API) on top of the official 
 [secretstore module RPC API](https://wiki.parity.io/JSONRPC-secretstore-module) and
 [secretstore sessions](https://wiki.parity.io/Secret-Store).
