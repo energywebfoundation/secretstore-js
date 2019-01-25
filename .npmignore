@@ -62,6 +62,7 @@ typings/
 
 # parity binary
 parity
+parity_old
 
 # node data
 nodes_ss_dev/

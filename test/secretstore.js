@@ -44,6 +44,18 @@ describe('Secret store correct inputs test', async () => {
         assert.isNotEmpty(skey);
     });
 
+    it('should retrieve generated server key public portion', async () => {
+        docID = sha256(Math.random().toString()).toString();
+        signedDocID = await ss.signRawHash(alice, alicepwd, docID);
+        skey = await ss.session.generateServerKey(docID, signedDocID, 1);
+        assert.exists(skey);
+        assert.isNotEmpty(skey);
+        let skey2 = await ss.session.retrieveServerKeyPublic(docID, signedDocID);
+        assert.exists(skey2);
+        assert.isNotEmpty(skey2);
+        assert.equal(skey, skey2);
+    });
+
     it('should generate document key', async () => {
         dkey = await ss.generateDocumentKey(alice, alicepwd, skey);
         assert.exists(dkey);

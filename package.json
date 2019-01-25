@@ -1,13 +1,13 @@
 {
   "name": "secretstore",
-  "version": "0.0.2",
-  "description": "Node package for Parity's Secret Store JSON-RPC API calls and sessions.",
+  "version": "0.0.3",
+  "description": "JS client for Parity's Secret Store JSON-RPC API calls and sessions.",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "web3": "^1.0.0-beta.36"
+    "web3": "^1.0.0-beta.37"
   },
   "devDependencies": {
     "chai": "^4.2.0",

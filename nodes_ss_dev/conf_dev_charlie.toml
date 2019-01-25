@@ -1,6 +1,5 @@
 [parity]
 base_path = "db.dev_ss_charlie"
-# chain = "tobalaba"
 chain = "dev"
 
 [ui]
@@ -8,7 +7,7 @@ disable = false
 
 [rpc]
 disable = false
-apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts", "private", "secretstore"]
+apis = ["all"]
 port = 8549
 
 [ipc]
