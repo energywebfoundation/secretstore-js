@@ -1,6 +1,6 @@
 {
   "name": "secretstore",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "JS client for Parity's Secret Store JSON-RPC API calls and sessions.",
   "main": "index.js",
   "directories": {
