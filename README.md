@@ -1,4 +1,4 @@
-# Parity's Secret Store JS client 
+# Parity Secret Store JS client 
 This is an [npm JS package](https://www.npmjs.com/package/secretstore) for interacting with Parity's Secret Store.
 It is an abstraction layer (API) on top of the official 
 [secretstore RPC API](https://wiki.parity.io/JSONRPC-secretstore-module) and
