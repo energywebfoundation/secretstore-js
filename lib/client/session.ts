@@ -3,9 +3,9 @@
 import axios, { Method, AxiosError } from 'axios';
 import * as utils from '../utils';
 import { SecretStoreSessionError } from './error';
-import { LocalDocumentKey } from './local';
+import { ExternallyEncryptedDocumentKey } from './local';
 
-export interface DocumentKeyShadows {
+export interface DocumentKeyPortions {
     common_point: string;
     decrypted_secret: string;
     decrypt_shadows: string[];
@@ -91,13 +91,13 @@ export class SecretStoreSessionClient {
      *
      * @param {string} serverKeyID The hex-encoded server key ID, the same that was used in the server key generation session.
      * @param {string} signedServerKeyID The hex-encoded server key ID, signed by the same entity (author) that has signed the server key id in the server key generation session.
-     * @param {LocalDocumentKey} localDocumentKey The externally encrypted document key object (with public server key, using special procedure) containinng the common point and encrypted point.
+     * @param {ExternallyEncryptedDocumentKey} localDocumentKey The externally encrypted document key object (with public server key, using special procedure) containinng the common point and encrypted point.
      * @returns {Promise<string>} Empty string if everything was OK (status code 200).
      */
     async storeDocumentKey(
         serverKeyID: string,
         signedServerKeyID: string,
-        localDocumentKey: LocalDocumentKey
+        localDocumentKey: ExternallyEncryptedDocumentKey
     ): Promise<string>;
 
     /**
@@ -127,14 +127,14 @@ export class SecretStoreSessionClient {
      *
      * @param {string} serverKeyID The hex-encoded server key ID, the same that was used in the server key generation session.
      * @param {string} signedServerKeyID The hex-encoded server key ID, signed by the same entity (author) that has signed the server key id in the server key generation session.
-     * @param {string | LocalDocumentKey} commonPointOrKey The hex-encoded common point portion of the externally encrypted document key, or the externally encrypted document key object (with public server key, using special procedure).
+     * @param {string | ExternallyEncryptedDocumentKey} commonPointOrKey The hex-encoded common point portion of the externally encrypted document key, or the externally encrypted document key object (with public server key, using special procedure).
      * @param {string} [encryptedPoint] The hex-encoded encrypted point portion of the externally encrypted document key (wtih public server key, using special procedure).
      * @returns {Promise<string>} Empty string if everything was OK (status code 200).
      */
     async storeDocumentKey(
         serverKeyID: string,
         signedServerKeyID: string,
-        commonPointOrKey: string | LocalDocumentKey,
+        commonPointOrKey: string | ExternallyEncryptedDocumentKey,
         encryptedPoint?: string
     ): Promise<string> {
         if (!commonPointOrKey) {
@@ -149,8 +149,8 @@ export class SecretStoreSessionClient {
             cp = utils.remove0x(commonPointOrKey as string);
             ep = utils.remove0x(encryptedPoint);
         } else {
-            cp = utils.remove0x((commonPointOrKey as LocalDocumentKey).common_point);
-            ep = utils.remove0x((commonPointOrKey as LocalDocumentKey).encrypted_point);
+            cp = utils.remove0x((commonPointOrKey as ExternallyEncryptedDocumentKey).common_point);
+            ep = utils.remove0x((commonPointOrKey as ExternallyEncryptedDocumentKey).encrypted_point);
         }
 
         const url =
@@ -196,11 +196,12 @@ export class SecretStoreSessionClient {
      *
      * @param {string} serverKeyID The ID of previously generated server key, to which the document key has been bound.
      * @param {string} signedServerKeyID The server key ID, signed with the private key of requester, having access to the server key.
-     * @returns {Promise<DocumentKeyShadows>} The hex-encoded decrypted_secret, common_point and decrypt_shadows fields. To reconstruct the document key, Secret Store client must pass values of these fields to a secretstore_shadowDecrypt RPC call.
+     * @returns {Promise<DocumentKeyPortions>} The object containing the hex-encoded decrypted_secret, common_point and decrypt_shadows fields.
+     * To reconstruct the document key, Secret Store client must pass these values to a secretstore_shadowDecrypt RPC call.
      */
-    async shadowRetrieveDocumentKey(serverKeyID: string, signedServerKeyID: string): Promise<DocumentKeyShadows> {
+    async shadowRetrieveDocumentKey(serverKeyID: string, signedServerKeyID: string): Promise<DocumentKeyPortions> {
         const url = `${this.url}/shadow/${utils.remove0x(serverKeyID)}/${utils.remove0x(signedServerKeyID)}`;
-        return this._send<DocumentKeyShadows>('get', url);
+        return this._send<DocumentKeyPortions>('get', url);
     }
 
     /**

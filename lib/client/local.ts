@@ -2,9 +2,9 @@
 
 import * as ethers from 'ethers';
 import * as utils from '../utils';
-import { DocumentKeyShadows } from './session';
+import { DocumentKeyPortions } from './session';
 
-export interface LocalDocumentKey {
+export interface ExternallyEncryptedDocumentKey {
     common_point: string;
     encrypted_key: string;
     encrypted_point: string;
@@ -14,7 +14,7 @@ export interface LocalDocumentKey {
  * @memberof module:client/local
  * @class
  */
-export class SecretStoreLocalAPIClient {
+export class SecretStoreRpcApiClient {
     provider: ethers.providers.JsonRpcProvider;
 
     /**
@@ -63,9 +63,9 @@ export class SecretStoreLocalAPIClient {
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
      * @param {string} serverKey The server key, returned by a [server key generating session]{@link https://openethereum.github.io/wiki/Secret-Store#server-key-generation-session}.
-     * @return {Promise<LocalDocumentKey>} The generated document key.
+     * @return {Promise<ExternallyEncryptedDocumentKey>} The generated document key encrypted with the server key.
      */
-    async generateDocumentKey(account: string, pwd: string, serverKey: string): Promise<LocalDocumentKey> {
+    async generateDocumentKey(account: string, pwd: string, serverKey: string): Promise<ExternallyEncryptedDocumentKey> {
         return this._send<any>('secretstore_generateDocumentKey', account, pwd, utils.ensure0x(serverKey));
     }
 
@@ -94,7 +94,7 @@ export class SecretStoreLocalAPIClient {
 
     /**
      * This method can be used to decrypt a document, encrypted by
-     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
@@ -119,15 +119,15 @@ export class SecretStoreLocalAPIClient {
 
     /**
      * This method can be used to decrypt a document, encrypted by
-     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
      *
      * Document key can be obtained by
      * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocument Encrypted document data, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}, as hex string.
-     * @param {DocumentKeyShadows} documentKeyShadows The document shadows object, containing the portions of an encrypted document key:
+     * @param {string} encryptedDocument Encrypted document data, returned by [encrypt()]{@link SecretStoreRpcApiClient#encrypt}, as hex string.
+     * @param {DocumentKeyPortions} documentKeyPortions Object containing the hex-srtring encoded portions of an encrypted document key:
      * decrypted secret, common point and decrypt shadows.
      * @return {Promise<string>} The decrypted secret document.
      */
@@ -135,19 +135,19 @@ export class SecretStoreLocalAPIClient {
         account: string,
         pwd: string,
         encryptedDocument: string,
-        documentKeyShadows: DocumentKeyShadows
+        documentKeyPortions: DocumentKeyPortions
     ): Promise<string>;
 
     /**
      * This method can be used to decrypt a document, encrypted by
-     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
      *
      * Document key can be obtained by
      * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreRpcApiClient#encrypt}.
      * @param {string} decryptedSecret The hex-encoded decrypted secret portion of an encrypted document key.
      * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
      * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
@@ -164,15 +164,16 @@ export class SecretStoreLocalAPIClient {
 
     /**
      * This method can be used to decrypt a document, encrypted by
-     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
      *
      * Document key can be obtained by
      * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}.
-     * @param {string} decryptedSecretOrDocumentKeyShadows The hex-encoded decrypted secret portion or document shadows object of an encrypted document key.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreRpcApiClient#encrypt}.
+     * @param {string | DocumentKeyPortions} decryptedSecretOrDocumentKeyPortions The hex-encoded decrypted secret string
+     * or document portions object of an encrypted document key.
      * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
      * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
      * @return {Promise<string>} The decrypted secret document.
@@ -181,27 +182,27 @@ export class SecretStoreLocalAPIClient {
         account: string,
         pwd: string,
         encryptedDocument: string,
-        decryptedSecretOrDocumentKeyShadows: string | DocumentKeyShadows,
+        decryptedSecretOrDocumentKeyPortions: string | DocumentKeyPortions,
         commonPoint?: string,
         decryptShadows?: string[]
     ): Promise<string> {
-        if (!decryptedSecretOrDocumentKeyShadows) {
+        if (!decryptedSecretOrDocumentKeyPortions) {
             throw new Error('Document key portions were not supplied');
         }
         if (
-            typeof decryptedSecretOrDocumentKeyShadows === 'string' ||
-            decryptedSecretOrDocumentKeyShadows instanceof String
+            typeof decryptedSecretOrDocumentKeyPortions === 'string' ||
+            decryptedSecretOrDocumentKeyPortions instanceof String
         ) {
             if (!commonPoint || !decryptShadows || decryptShadows.length === 0) {
                 throw new Error(
-                    `Not enough document key portions were supplied (${decryptedSecretOrDocumentKeyShadows},${commonPoint},${decryptShadows})`
+                    `Not enough document key portions were supplied (${decryptedSecretOrDocumentKeyPortions},${commonPoint},${decryptShadows})`
                 );
             }
             return this._send<string>(
                 'secretstore_shadowDecrypt',
                 account,
                 pwd,
-                utils.ensure0x(decryptedSecretOrDocumentKeyShadows as string),
+                utils.ensure0x(decryptedSecretOrDocumentKeyPortions as string),
                 utils.ensure0x(commonPoint),
                 decryptShadows,
                 utils.ensure0x(encryptedDocument)
@@ -211,9 +212,9 @@ export class SecretStoreLocalAPIClient {
             'secretstore_shadowDecrypt',
             account,
             pwd,
-            utils.ensure0x((decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).decrypted_secret),
-            utils.ensure0x((decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).common_point),
-            (decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).decrypt_shadows,
+            utils.ensure0x((decryptedSecretOrDocumentKeyPortions as DocumentKeyPortions).decrypted_secret),
+            utils.ensure0x((decryptedSecretOrDocumentKeyPortions as DocumentKeyPortions).common_point),
+            (decryptedSecretOrDocumentKeyPortions as DocumentKeyPortions).decrypt_shadows,
             utils.ensure0x(encryptedDocument)
         );
     }

@@ -4,7 +4,7 @@ import { keccak256 } from 'js-sha3';
 import { ethers } from 'ethers';
 
 import assets from './assets';
-import { SecretStoreSessionClient, SecretStoreLocalAPIClient, DocumentKeyShadows, LocalDocumentKey } from '../lib';
+import { SecretStoreSessionClient, SecretStoreRpcApiClient, DocumentKeyPortions, ExternallyEncryptedDocumentKey } from '../lib';
 
 chai.use(chaiAsPromised);
 const { assert, expect } = chai;
@@ -16,7 +16,7 @@ const { httpSSAlice } = assets.httpSS;
 const { node1, node2, node3 } = assets.nodes;
 
 const provider = new ethers.providers.JsonRpcProvider(httpRpcAlice);
-const ss = new SecretStoreLocalAPIClient(provider);
+const ss = new SecretStoreRpcApiClient(provider);
 const ssSession = new SecretStoreSessionClient(httpSSAlice);
 
 describe('Secret store correct inputs test', async () => {
@@ -25,16 +25,16 @@ describe('Secret store correct inputs test', async () => {
     let docID: string;
     let signedDocID: string;
     let skey: string;
-    let dkey: LocalDocumentKey | string;
+    let dkey: ExternallyEncryptedDocumentKey | string;
     let retrievedKey: string;
-    let shadowRetrievedKey: DocumentKeyShadows;
+    let shadowRetrievedKey: DocumentKeyPortions;
 
     it('should instantiate with correct params', async () => {
-        assert.exists(new SecretStoreLocalAPIClient(httpRpcAlice));
+        assert.exists(new SecretStoreRpcApiClient(httpRpcAlice));
     });
 
     it('should fail to instantiate with invalid params', async () => {
-        assert.throws(() => new SecretStoreLocalAPIClient(undefined));
+        assert.throws(() => new SecretStoreRpcApiClient(undefined));
         assert.throws(() => new SecretStoreSessionClient(undefined));
         assert.throws(() => new SecretStoreSessionClient(''));
     });
@@ -73,9 +73,9 @@ describe('Secret store correct inputs test', async () => {
     });
 
     it('should fail to store document key with incorrect params', async () => {
-        expect(ssSession.storeDocumentKey(docID, signedDocID, undefined, (dkey as LocalDocumentKey).encrypted_point)).to
+        expect(ssSession.storeDocumentKey(docID, signedDocID, undefined, (dkey as ExternallyEncryptedDocumentKey).encrypted_point)).to
             .be.rejected;
-        expect(ssSession.storeDocumentKey(docID, signedDocID, (dkey as LocalDocumentKey).common_point, undefined)).to.be
+        expect(ssSession.storeDocumentKey(docID, signedDocID, (dkey as ExternallyEncryptedDocumentKey).common_point, undefined)).to.be
             .rejected;
         expect(ssSession.storeDocumentKey(docID, signedDocID, '', '')).to.be.rejected;
     });
@@ -84,8 +84,8 @@ describe('Secret store correct inputs test', async () => {
         const res = await ssSession.storeDocumentKey(
             docID,
             signedDocID,
-            (dkey as LocalDocumentKey).common_point,
-            (dkey as LocalDocumentKey).encrypted_point
+            (dkey as ExternallyEncryptedDocumentKey).common_point,
+            (dkey as ExternallyEncryptedDocumentKey).encrypted_point
         );
         assert.exists(res);
     });
@@ -112,11 +112,6 @@ describe('Secret store correct inputs test', async () => {
     });
 
     it('should not be able to generate same server and document key again', async () => {
-        try {
-            await ssSession.generateServerAndDocumentKey(docID, signedDocID, 1);
-        } catch (e) {
-            console.log(e);
-        }
         expect(ssSession.generateServerAndDocumentKey(docID, signedDocID, 1)).to.be.rejected;
     });
 
@@ -242,7 +237,7 @@ describe('Secret store correct inputs test', async () => {
 });
 
 describe('Secret store wrong inputs test', async () => {
-    async function trial(secretStore: SecretStoreLocalAPIClient) {
+    async function trial(secretStore: SecretStoreRpcApiClient) {
         const docID = `0x${keccak256('lololol').toString()}`;
         const signedDocID = await secretStore.signRawHash(alice, alicepwd, docID);
 
@@ -251,7 +246,7 @@ describe('Secret store wrong inputs test', async () => {
     }
 
     it('should still work without SS', async () => {
-        const ss2 = new SecretStoreLocalAPIClient(provider);
+        const ss2 = new SecretStoreRpcApiClient(provider);
         await trial(ss2);
     });
 
