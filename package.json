@@ -14,6 +14,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/mocha": "^8.0.0",
+    "@types/node": "^14.0.24",
     "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.7.0",
     "chai": "^4.2.0",
@@ -26,6 +27,7 @@
     "jsdoc": "^3.6.4",
     "jsdoc-template": "git+https://github.com/ngyam/jsdoc-template.git",
     "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
     "prettier": "^2.0.5",
     "shx": "^0.3.2",
     "ts-node": "^8.10.2",
@@ -34,6 +36,7 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "test": "mocha -r ts-node/register test/*.ts --exit",
+    "coverage": "nyc npm run test",
     "start": "cd nodes_ss_dev && ./start.sh",
     "stop": "cd nodes_ss_dev && ./stop.sh",
     "clear": "cd nodes_ss_dev && ./clear.sh",
