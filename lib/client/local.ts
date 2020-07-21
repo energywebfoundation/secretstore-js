@@ -18,7 +18,7 @@ export class SecretStoreRpcApiClient {
     provider: ethers.providers.JsonRpcProvider;
 
     /**
-     * The class holding together the OpenEthereum secretstore module RPC API. Should be use for local operations.
+     * The class holding together the OpenEthereum secretstore module RPC API. Should be used to communicate with a local node.
      *
      * @param {String | ethers.providers.JsonRpcProvider} ssLocalAPIEndpoint The RPC endpoint of an OpenEthereum client.
      * This should be a local node for trust reasons.

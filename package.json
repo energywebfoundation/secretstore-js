@@ -2,8 +2,8 @@
   "name": "secretstore",
   "version": "0.1.0",
   "description": "EnergyWeb's JS Secret Store client",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "directories": {
     "test": "test"
   },

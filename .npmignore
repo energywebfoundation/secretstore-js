@@ -79,3 +79,7 @@ contracts/
 # tests
 test/
 test.js
+
+.eslintrc.js
+.prettierrc
+tsconfig.json
