@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      Home - Documentation
+      client/local.js - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -51,14 +53,14 @@
 
   <div class="top-nav-wrapper">
     <ul>
-      <li  class="active" >
+      <li >
         <a href="index.html">
           
-          
-            <svg fill="#0095dd" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <svg fill="#6D6D6D" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
               <path d="M0 0h24v24H0z" fill="none"/>
             </svg>
+          
           
         </a>
       </li>
@@ -89,17 +91,144 @@
 
   <div id="main">
     
+      <h1 class="page-title">
+        client/local.js
+      </h1>
+    
 
     
       
 
-
-
-    
-
-      
-
-
+<section>
+  <article>
+    <pre class="prettyprint source linenums"><code>"use strict";
+/** @module client/local */
+var __importStar = (this &amp;&amp; this.__importStar) || function (mod) {
+    if (mod &amp;&amp; mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const ethers = __importStar(require("ethers"));
+const utils = __importStar(require("../utils"));
+/**
+ * @memberof module:client/local
+ * @class
+ */
+class SecretStoreLocalAPIClient {
+    /**
+     * The class holding together the OpenEthereum secretstore module RPC API. Should be use for local operations.
+     *
+     * @param {String | ethers.providers.JsonRpcProvider} ssLocalAPIEndpoint The RPC endpoint of an OpenEthereum client.
+     * This should be a local node for trust reasons.
+     */
+    constructor(ssLocalAPIEndpoint) {
+        if (!ssLocalAPIEndpoint) {
+            throw new Error(`Secret Store RPC module endpoint URL was not given`);
+        }
+        if (typeof ssLocalAPIEndpoint === 'string' || ssLocalAPIEndpoint instanceof String) {
+            this.provider = new ethers.providers.JsonRpcProvider(ssLocalAPIEndpoint);
+            return;
+        }
+        this.provider = ssLocalAPIEndpoint;
+    }
+    async _send(method, ...params) {
+        const res = await this.provider.send(method, params);
+        if (res.error) {
+            throw new Error(res.error);
+        }
+        return res;
+    }
+    /**
+     *
+     * Computes recoverable ECDSA signatures.
+     *
+     * Typically used for signatures of server key ID and signatures of nodes-set hash in the Secret Store.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} rawhash A 256-bit hash to be signed as a hex string (with or without 0x prefix), e.g.: server key id or nodes-set hash.
+     * @returns {Promise&lt;string>} The signed hash.
+     */
+    async signRawHash(account, pwd, rawhash) {
+        return this._send('secretstore_signRawHash', account, pwd, utils.ensure0x(rawhash));
+    }
+    /**
+     * Securely generates a document key locally in a way that it remains unknown to all key servers.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} serverKey The server key, returned by a [server key generating session]{@link https://openethereum.github.io/wiki/Secret-Store#server-key-generation-session}.
+     * @return {Promise&lt;LocalDocumentKey>} The generated document key.
+     */
+    async generateDocumentKey(account, pwd, serverKey) {
+        return this._send('secretstore_generateDocumentKey', account, pwd, utils.ensure0x(serverKey));
+    }
+    /**
+     * You can use it to encrypt a small document.
+     *
+     * An encryption key is needed, typically obtained from the store by running
+     * a [document key retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-retrieval-session} or
+     * a [server- and document key generation session]{@link https://openethereum.github.io/wiki/Secret-Store#server-and-document-key-generation-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
+     * @param {string} hexDocument Hex encoded document data.
+     * @return {Promise&lt;string>} The encrypted secret document as a hex encoded string.
+     */
+    async encrypt(account, pwd, encryptedDocumentKey, hexDocument) {
+        return this._send('secretstore_encrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(hexDocument));
+    }
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
+     * @param {string} encryptedDocument The encrypted document data, returned by "encrypt" as hex string.
+     * @return {Promise&lt;string>} The decrypted secret document.
+     */
+    async decrypt(account, pwd, encryptedDocumentKey, encryptedDocument) {
+        return this._send('secretstore_decrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(encryptedDocument));
+    }
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     *
+     * Document key can be obtained by
+     * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} decryptedSecret The hex-encoded decrypted secret portion of an encrypted document key.
+     * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
+     * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
+     * @param {string} encryptedDocument Encrypted document data, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}, as hex string.
+     * @return {Promise&lt;string>} The decrypted secret document.
+     */
+    async shadowDecrypt(account, pwd, decryptedSecret, commonPoint, decryptShadows, encryptedDocument) {
+        return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecret), utils.ensure0x(commonPoint), decryptShadows, utils.ensure0x(encryptedDocument));
+    }
+    /**
+     *
+     * Computes the hash of node ids, required to compute a node-set signature for manual
+     * [nodes set change session]{@link https://openethereum.github.io/wiki/Secret-Store-Configuration#changing-the-configuration-of-a-set-of-servers}.
+     *
+     * @param {string[]} nodeIDs List of hex-encoded node ID’s (public keys, enode addresses).
+     * @returns {Promise&lt;string>} The hash as a hex string.
+     */
+    async serversSetHash(nodeIDs) {
+        return this._send('secretstore_serversSetHash', nodeIDs);
+    }
+}
+exports.SecretStoreLocalAPIClient = SecretStoreLocalAPIClient;
+//# sourceMappingURL=local.js.map</code></pre>
+  </article>
+</section>
 
     
 

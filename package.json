@@ -1,27 +1,47 @@
 {
   "name": "secretstore",
   "version": "0.1.0",
-  "description": "JS client for Parity's Secret Store JSON-RPC API calls and sessions.",
-  "main": "index.js",
+  "description": "EnergyWeb's JS Secret Store client",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "web3": "^1.0.0-beta.37"
+    "axios": "^0.19.2",
+    "ethers": "^5.0.7"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
     "chai": "^4.2.0",
-    "crypto-js": "^3.1.9-1",
-    "jsdoc": "^3.5.5",
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "js-sha3": "^0.8.0",
+    "jsdoc": "^3.6.4",
     "jsdoc-template": "git+https://github.com/ngyam/jsdoc-template.git",
-    "mocha": "^5.2.0"
+    "mocha": "^8.0.1",
+    "prettier": "^2.0.5",
+    "shx": "^0.3.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   },
   "scripts": {
-    "test": "mocha",
+    "build": "tsc -b tsconfig.json",
+    "test": "mocha -r ts-node/register test/*.ts --exit",
     "start": "cd nodes_ss_dev && ./start.sh",
     "stop": "cd nodes_ss_dev && ./stop.sh",
     "clear": "cd nodes_ss_dev && ./clear.sh",
-    "docs": "./jsdoc/docgen.sh"
+    "docs": "./jsdoc/docgen.sh",
+    "docs:clean": "shx rm -rf ./docs/*",
+    "lint": "eslint \"lib/**/*{.ts,.tsx}\" \"test/**/*{.ts,.tsx}\"",
+    "lint:fix": "eslint \"lib/**/*{.ts,.tsx}\" \"test/**/*{.ts,.tsx}\" --fix",
+    "prettier": "prettier --write --config-precedence file-override './lib/**/*' './test/**/*'"
   },
   "repository": {
     "type": "git",
@@ -43,7 +63,7 @@
     "parity"
   ],
   "author": "Adam Nagy (ngy.am.zs@gmail.com)",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/energywebfoundation/secretstore-js/issues"
   },

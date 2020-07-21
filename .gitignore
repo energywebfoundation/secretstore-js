@@ -71,3 +71,7 @@ nodes_ss_dev/*/network/
 nodes_ss_dev/*/secretstore/
 nodes_ss_dev/*/signer/
 nodes_ss_dev/*/parity.log
+
+test.js
+test.ts
+dist/

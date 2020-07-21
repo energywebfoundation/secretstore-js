@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      Home - Documentation
+      client/error.js - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -51,14 +53,14 @@
 
   <div class="top-nav-wrapper">
     <ul>
-      <li  class="active" >
+      <li >
         <a href="index.html">
           
-          
-            <svg fill="#0095dd" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <svg fill="#6D6D6D" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
               <path d="M0 0h24v24H0z" fill="none"/>
             </svg>
+          
           
         </a>
       </li>
@@ -89,17 +91,40 @@
 
   <div id="main">
     
+      <h1 class="page-title">
+        client/error.js
+      </h1>
+    
 
     
       
 
-
-
-    
-
-      
-
-
+<section>
+  <article>
+    <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Thrown when an error has occured during the Secret Store session.
+ *
+ * @memberof module:secretstore/session
+ * @class
+ */
+class SecretStoreSessionError extends Error {
+    /**
+     * @constructor
+     * @param {string} message The error message.
+     * @param {any} response The response object.
+     */
+    constructor(message, response) {
+        super(message);
+        this.response = JSON.stringify(response);
+        this.name = 'SecretStoreSessionError';
+    }
+}
+exports.SecretStoreSessionError = SecretStoreSessionError;
+//# sourceMappingURL=error.js.map</code></pre>
+  </article>
+</section>
 
     
 
