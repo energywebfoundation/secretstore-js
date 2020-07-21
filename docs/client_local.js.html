@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      utils.js - Documentation
+      client/local.js - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -92,7 +92,7 @@
   <div id="main">
     
       <h1 class="page-title">
-        utils.js
+        client/local.js
       </h1>
     
 
@@ -102,68 +102,155 @@
 <section>
   <article>
     <pre class="prettyprint source linenums"><code>"use strict";
-/**
- * @module utils
- */
+/** @module client/local */
+var __createBinding = (this &amp;&amp; this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this &amp;&amp; this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this &amp;&amp; this.__importStar) || function (mod) {
+    if (mod &amp;&amp; mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" &amp;&amp; Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logError = exports.logFailedResponse = exports.removeEnclosingDQuotes = exports.ensure0x = exports.remove0x = void 0;
+exports.SecretStoreRpcApiClient = void 0;
+const ethers = __importStar(require("ethers"));
+const utils = __importStar(require("../utils"));
 /**
- * Removes leading "0x" pefix from a string if it has any.
- *
- * @param {string} val The input string.
- * @returns {string} The string without 0x prefix.
+ * @memberof module:client/local
+ * @class
  */
-function remove0x(val) {
-    if (!val)
-        return '';
-    return val.startsWith('0x') ? val.slice(2) : val;
+class SecretStoreRpcApiClient {
+    /**
+     * The class holding together the OpenEthereum secretstore module RPC API. Should be use for local operations.
+     *
+     * @param {String | ethers.providers.JsonRpcProvider} ssLocalAPIEndpoint The RPC endpoint of an OpenEthereum client.
+     * This should be a local node for trust reasons.
+     */
+    constructor(ssLocalAPIEndpoint) {
+        if (!ssLocalAPIEndpoint) {
+            throw new Error(`Secret Store RPC module endpoint URL was not given`);
+        }
+        if (typeof ssLocalAPIEndpoint === 'string' || ssLocalAPIEndpoint instanceof String) {
+            this.provider = new ethers.providers.JsonRpcProvider(ssLocalAPIEndpoint);
+            return;
+        }
+        this.provider = ssLocalAPIEndpoint;
+    }
+    async _send(method, ...params) {
+        const res = await this.provider.send(method, params);
+        if (res.error) {
+            throw new Error(res.error);
+        }
+        return res;
+    }
+    /**
+     *
+     * Computes recoverable ECDSA signatures.
+     *
+     * Typically used for signatures of server key ID and signatures of nodes-set hash in the Secret Store.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} rawhash A 256-bit hash to be signed as a hex string (with or without 0x prefix), e.g.: server key id or nodes-set hash.
+     * @returns {Promise&lt;string>} The signed hash.
+     */
+    async signRawHash(account, pwd, rawhash) {
+        return this._send('secretstore_signRawHash', account, pwd, utils.ensure0x(rawhash));
+    }
+    /**
+     * Securely generates a document key locally in a way that it remains unknown to all key servers.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} serverKey The server key, returned by a [server key generating session]{@link https://openethereum.github.io/wiki/Secret-Store#server-key-generation-session}.
+     * @return {Promise&lt;ExternallyEncryptedDocumentKey>} The generated document key encrypted with the server key.
+     */
+    async generateDocumentKey(account, pwd, serverKey) {
+        return this._send('secretstore_generateDocumentKey', account, pwd, utils.ensure0x(serverKey));
+    }
+    /**
+     * You can use it to encrypt a small document.
+     *
+     * An encryption key is needed, typically obtained from the store by running
+     * a [document key retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-retrieval-session} or
+     * a [server- and document key generation session]{@link https://openethereum.github.io/wiki/Secret-Store#server-and-document-key-generation-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} hexDocument Hex encoded document data.
+     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
+     * @return {Promise&lt;string>} The encrypted secret document as a hex encoded string.
+     */
+    async encrypt(account, pwd, hexDocument, encryptedDocumentKey) {
+        return this._send('secretstore_encrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(hexDocument));
+    }
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocument The encrypted document data, returned by "encrypt" as hex string.
+     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
+     * @return {Promise&lt;string>} The decrypted secret document.
+     */
+    async decrypt(account, pwd, encryptedDocument, encryptedDocumentKey) {
+        return this._send('secretstore_decrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(encryptedDocument));
+    }
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreRpcApiClient#encrypt} method before.
+     *
+     * Document key can be obtained by
+     * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreRpcApiClient#encrypt}.
+     * @param {string | DocumentKeyPortions} decryptedSecretOrDocumentKeyPortions The hex-encoded decrypted secret string
+     * or document portions object of an encrypted document key.
+     * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
+     * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
+     * @return {Promise&lt;string>} The decrypted secret document.
+     */
+    async shadowDecrypt(account, pwd, encryptedDocument, decryptedSecretOrDocumentKeyPortions, commonPoint, decryptShadows) {
+        if (!decryptedSecretOrDocumentKeyPortions) {
+            throw new Error('Document key portions were not supplied');
+        }
+        if (typeof decryptedSecretOrDocumentKeyPortions === 'string' ||
+            decryptedSecretOrDocumentKeyPortions instanceof String) {
+            if (!commonPoint || !decryptShadows || decryptShadows.length === 0) {
+                throw new Error(`Not enough document key portions were supplied (${decryptedSecretOrDocumentKeyPortions},${commonPoint},${decryptShadows})`);
+            }
+            return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecretOrDocumentKeyPortions), utils.ensure0x(commonPoint), decryptShadows, utils.ensure0x(encryptedDocument));
+        }
+        return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecretOrDocumentKeyPortions.decrypted_secret), utils.ensure0x(decryptedSecretOrDocumentKeyPortions.common_point), decryptedSecretOrDocumentKeyPortions.decrypt_shadows, utils.ensure0x(encryptedDocument));
+    }
+    /**
+     *
+     * Computes the hash of node ids, required to compute a node-set signature for manual
+     * [nodes set change session]{@link https://openethereum.github.io/wiki/Secret-Store-Configuration#changing-the-configuration-of-a-set-of-servers}.
+     *
+     * @param {string[]} nodeIDs List of hex-encoded node ID’s (public keys, enode addresses).
+     * @returns {Promise&lt;string>} The hash as a hex string.
+     */
+    async serversSetHash(nodeIDs) {
+        return this._send('secretstore_serversSetHash', nodeIDs);
+    }
 }
-exports.remove0x = remove0x;
-/**
- * Adds a leading "0x" prefix to a string if it doesn't have already.
- *
- * @param {string} str The string
- */
-function ensure0x(str) {
-    return str.startsWith('0x') ? str : `0x${str}`;
-}
-exports.ensure0x = ensure0x;
-/**
- * Removes enclosing double quotes from a string. Used for formatting messages coming from the Secret Store nodes.
- *
- * @param {string} str The string to format.
- * @returns {string} The string without enclosing double quotes.
- */
-function removeEnclosingDQuotes(str) {
-    return str.replace(/^"(.*)"$/, '$1');
-}
-exports.removeEnclosingDQuotes = removeEnclosingDQuotes;
-/**
- * Logs relevant information from a failed http response.
- *
- * @param {function(any[]): void} logFunction Log function to use with the error message.
- * @param {AxiosResponse} response The response object.
- */
-function logFailedResponse(logFunction, response) {
-    logFunction('Request failed');
-    logFunction(`StatusCode: ${response.status}`);
-    logFunction(`StatusMessage:  ${response.statusText}`);
-    logFunction(`Body: ${response.data}`);
-    logFunction(`Request options: ${JSON.stringify(response.config)}`);
-}
-exports.logFailedResponse = logFailedResponse;
-/**
- * Logs the error object. Only stringifies the input.
- *
- * @param {function(any[]): void} logFunction Log function to use with the error message.
- * @param {any} e Error object or message.
- */
-function logError(logFunction, e) {
-    logFunction('Error:');
-    logFunction(JSON.stringify(e));
-}
-exports.logError = logError;
-//# sourceMappingURL=utils.js.map</code></pre>
+exports.SecretStoreRpcApiClient = SecretStoreRpcApiClient;
+//# sourceMappingURL=local.js.map</code></pre>
   </article>
 </section>
 

@@ -1,13 +1,10 @@
-# Parity Secret Store JS client 
-This is an [npm JS package](https://www.npmjs.com/package/secretstore) for interacting with Parity's Secret Store.
-It is an abstraction layer (API) on top of the official 
-[secretstore RPC API](https://wiki.parity.io/JSONRPC-secretstore-module) and
-[secretstore sessions](https://wiki.parity.io/Secret-Store).
+# EnergyWeb's Secret Store JS client 
+Secret Store JS client, an [Npm package](https://www.npmjs.com/package/secretstore) for interacting with OpenEthereum's Secret Store `rpc` and `session` modules.
+Abstraction layer on top of the official 
+[secretstore RPC API](https://openethereum.github.io/wiki/JSONRPC-secretstore-module) and
+[secretstore sessions](https://openethereum.github.io/wiki/Secret-Store).
 Naming conventions follow the underlying APIs'.
 
-The documentation is for this package and its functions. For more information on 
-how Secret Store works, please refer to the [Parity wiki](https://github.com/paritytech/wiki). 
-Most of the function descriptions have been copied from there.
 
 ## Maintainers
 **Primary**: Adam Nagy (@ngyam)
@@ -16,46 +13,66 @@ Most of the function descriptions have been copied from there.
 
 https://energywebfoundation.github.io/secretstore-js/index.html
 
+The documentation is for this package and its functions. For more information on 
+how Secret Store works, please refer to the [Parity wiki](https://openethereum.github.io/wiki). 
+Most of the function descriptions have been copied from there.
+
 ## Quickstart
 
 In your project:
 ```bash
 npm install secretstore
 ```
+or
 
-Then:
+```bash
+yarn add secretstore
+
+```
+
+### Then
+
+Javascript
 ```javascript
 
 const secretstore = require("secretstore");
 
-// your web3 instance
-// preferably your local node
-const web3 = new (require('web3'))("http://127.0.0.1:8545");
+// using the OpenEthereum's secretstore rpc module
+// should be used on your local node for trust reasons
+const sslac = new secretstore.SecretStoreRpcApiClient("http://127.0.0.1:8545");
+sslac.<method>...
 
-// this is where a SS cluster node is listening for HTTP requests
-const ss_endpoint_uri = "http://127.0.0.1:8090";
-
-const ss = new secretstore.SecretStore(web3, ss_endpoint_uri);
-
-// secretstore RPC API calls
-ss.method..
-
-// secretstore session calls
-ss.session.method..
-
+// using the OpenEthereum's secretstore session module
+const sssc = new secretstore.SecretStoreSessionClient("http://127.0.0.1:8090");
+sssc.<method>...
 ```
 
-If you wonder how to set up a Secret Store cluster, check out the official [config guide](https://wiki.parity.io/Secret-Store-Configuration) and peek into the [nodes_ss_dev/](./nodes_ss_dev/) folder.
+Typescript
+```typescript
 
-**Note:** [Non-session Secret Store RPC](https://wiki.parity.io/JSONRPC-secretstore-module) calls work with a regular Parity client too, which is not compiled with the special secretstore feature.
+import {SecretStoreRpcApiClient, SecretStoreSessionClient} from "secretstore";
+
+// using the OpenEthereum's secretstore rpc module
+// should be used on your local node for trust reasons
+const sslac = new SecretStoreRpcApiClient("http://127.0.0.1:8545");
+sslac.<method>...
+
+// using the OpenEthereum's secretstore session module
+const sssc = new SecretStoreSessionClient("http://127.0.0.1:8090");
+sssc.<method>...
+```
+
+If you wonder how to set up a Secret Store cluster, check out the official [config guide](https://openethereum.github.io/wiki/Secret-Store-Configuration) and peek into the [nodes_ss_dev/](./nodes_ss_dev/) folder.
+
+**Note:** [Non-session Secret Store RPC](https://openethereum.github.io/wiki/JSONRPC-secretstore-module) calls work with a regular Parity client too, which is not compiled with the special secretstore feature.
 
 ## Examples
 
-- You can see some examples amongst the [tests](test/secretstore.js).
+- You can see some examples amongst the [tests](test/secretstore.test.ts).
 - The official Parity Secret Store tutorial was reproduced with this client in this repo: https://github.com/ngyam/tutorial-secretstore-privatetx
 
 ## Tested with
-- Locally compiled Parity client from master branch [at this commit](https://github.com/paritytech/parity-ethereum/commit/4fec2f2fc26c0daf95f4d91cbbf55eeca74888fe), merged with [`ss_expose_retrieve_server_public` branch](https://github.com/paritytech/parity-ethereum/tree/ss_expose_retrieve_server_public) at [this commit](https://github.com/paritytech/parity-ethereum/commit/7c9d2794b1ebd0212f51e2c4687241c7536e980d).
+- Locally compiled [Parity client v2.6.8](https://github.com/openethereum/openethereum/releases/tag/v2.6.8).
 
 ## Contributing
 
@@ -72,38 +89,38 @@ Please read [contributing](./CONTRIBUTING.md) and our [code of conduct](./CODE_O
 ```bash
 git clone https://github.com/energywebfoundation/secretstore-js.git
 cd secretstore-js
-npm install -D
+yarn
 ```
 
 ## Running the tests
 
 **ACHTUNG**: make sure to start the local secret store cluster first.
 
-Your Secret Store enabled Parity client binary has to be placed in the root folder of the project with the name `parity`. It is shown in the [official tutorial](https://wiki.parity.io/Secret-Store-Tutorial-1.html#1-enable-the-secret-store-feature-of-parity) how to compile with Secret Store enabled. Use latest master branch preferably.
+Your Secret Store enabled Parity/OpenEthereum client binary has to be placed in the root folder of the project with the name `parity`. It is shown in the [official tutorial](https://openethereum.github.io/wiki/Secret-Store-Tutorial-1.html#1-enable-the-secret-store-feature-of-parity) how to compile with Secret Store enabled. Use latest master branch preferably.
 
 Then:
 
 1. start nodes
 
 ``` bash
-npm run start
+yarn start
 ```
 
 2. run tests 
 
 ```bash
-npm run test
+yarn test
 ```
 
 3. When done fiddling around:
 
 ```bash
-npm run stop
+yarn stop
 ```
 4. Optional: if you need to clean up chaindb/secretstore
 
 ```bash
-npm run clear
+yarn clear
 ```
 
 To fill up the test accounts with some ethers, you can use the [nodes_ss_dev/funclocals.sh](nodes_ss_dev/funclocals.sh) script.
@@ -114,7 +131,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## License
 
-This project is licensed under GPLv3 - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under GPL-3.0 - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgments
 

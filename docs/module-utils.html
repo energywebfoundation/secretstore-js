@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>
-      SecretStoreSessionError - Documentation
+      utils - Documentation
   </title>
 
   <link href="https://www.braintreepayments.com/images/favicon-ccda0b14.png" rel="icon" type="image/png">
@@ -90,7 +90,7 @@
   <div id="main">
     
       <h1 class="page-title">
-        SecretStoreSessionError
+        utils
       </h1>
     
 
@@ -99,18 +99,7 @@
 <section>
   <header>
     
-      <h2>
-        
-        SecretStoreSessionError
-        
-      </h2>
-
       
-        <div class="class-description">
-          Thrown when an error has occured during the Secret Store session.
-        </div>
-      
-    
   </header>
 
   <article>
@@ -118,25 +107,49 @@
       
         
 
+        
+      
+    </div>
 
-  
-    <h2>Constructor</h2>
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+      <h3 class="subsection-title">Methods</h3>
+
+      
+        
+
+
   
 
   <span class='name-container'>
-    <a class="link-icon" href="#SecretStoreSessionError">
+    <a class="link-icon" href="#~ensure0x">
       <svg height="20" width="20" style="fill: black;">
         <use xlink:href="#linkIcon"></use>
       </svg>
     </a>
-    <h4 class="name" id="SecretStoreSessionError">
-      <span class="type-signature"></span>new SecretStoreSessionError<span class="signature">(message, meta)</span><span class="type-signature"></span>
+    <h4 class="name" id="~ensure0x">
+      <span class="type-signature">(inner) </span>ensure0x<span class="signature">(str)</span><span class="type-signature"></span>
     </h4>
   </span>
 
   
 
 
+
+  <div class="description">
+    Adds a leading "0x" prefix to a string if it doesn't have already.
+  </div>
 
 
 
@@ -168,7 +181,7 @@
     
       <tr>
         
-          <td class="name"><code>message</code></td>
+          <td class="name"><code>str</code></td>
         
 
         <td class="type">
@@ -189,36 +202,7 @@
         
 
         <td class="description last">
-          The error message.
-          
-        </td>
-      </tr>
-
-    
-      <tr>
-        
-          <td class="name"><code>meta</code></td>
-        
-
-        <td class="type">
-          
-            
-    <span class="param-type">
-      any
-    </span>
-
-    
-
-
-          
-        </td>
-
-        
-
-        
-
-        <td class="description last">
-          Some information object to help debugging
+          The string
           
         </td>
       </tr>
@@ -262,7 +246,7 @@
     <dd class="tag-source">
       <ul class="dummy">
         <li>
-          <a href="client_error.js.html">client/error.js</a>, <a href="client_error.js.html#line16">line 16</a>
+          <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line24">line 24</a>
         </li>
       </ul>
     </dd>
@@ -289,20 +273,648 @@
 
 
       
-    </div>
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#~logError">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="~logError">
+      <span class="type-signature">(inner) </span>logError<span class="signature">(logFunction, e)</span><span class="type-signature"></span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    Logs the error object. Only stringifies the input.
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>logFunction</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      function
+    </span>
 
     
 
-    
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          Log function to use with the error message.
+          
+        </td>
+      </tr>
 
     
+      <tr>
+        
+          <td class="name"><code>e</code></td>
+        
 
-     
+        <td class="type">
+          
+            
+    <span class="param-type">
+      any
+    </span>
 
     
 
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          Error object or message.
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line58">line 58</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#~logFailedResponse">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="~logFailedResponse">
+      <span class="type-signature">(inner) </span>logFailedResponse<span class="signature">(logFunction, response)</span><span class="type-signature"></span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    Logs relevant information from a failed http response.
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>logFunction</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      function
+    </span>
+
     
 
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          Log function to use with the error message.
+          
+        </td>
+      </tr>
+
+    
+      <tr>
+        
+          <td class="name"><code>response</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      AxiosResponse
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          The response object.
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line44">line 44</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#~remove0x">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="~remove0x">
+      <span class="type-signature">(inner) </span>remove0x<span class="signature">(val)</span><span class="type-signature"> &rarr; {string}</span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    Removes leading "0x" pefix from a string if it has any.
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>val</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      string
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          The input string.
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line13">line 13</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+        
+
+
+  
+
+  <span class='name-container'>
+    <a class="link-icon" href="#~removeEnclosingDQuotes">
+      <svg height="20" width="20" style="fill: black;">
+        <use xlink:href="#linkIcon"></use>
+      </svg>
+    </a>
+    <h4 class="name" id="~removeEnclosingDQuotes">
+      <span class="type-signature">(inner) </span>removeEnclosingDQuotes<span class="signature">(str)</span><span class="type-signature"> &rarr; {string}</span>
+    </h4>
+  </span>
+
+  
+
+
+
+  <div class="description">
+    Removes enclosing double quotes from a string. Used for formatting messages coming from the Secret Store nodes.
+  </div>
+
+
+
+
+
+
+
+  <h5>Parameters:</h5>
+  
+
+<table class="params">
+  <thead>
+    <tr>
+      
+        <th>Name</th>
+      
+
+      <th>Type</th>
+
+      
+
+      
+
+      <th class="last">Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    
+      <tr>
+        
+          <td class="name"><code>str</code></td>
+        
+
+        <td class="type">
+          
+            
+    <span class="param-type">
+      string
+    </span>
+
+    
+
+
+          
+        </td>
+
+        
+
+        
+
+        <td class="description last">
+          The string to format.
+          
+        </td>
+      </tr>
+
+    
+  </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source">
+      <ul class="dummy">
+        <li>
+          <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line34">line 34</a>
+        </li>
+      </ul>
+    </dd>
+  
+
+  
+
+  
+
+  
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
     
 
     
