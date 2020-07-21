@@ -14,7 +14,7 @@ Naming conventions follow the underlying APIs'.
 https://energywebfoundation.github.io/secretstore-js/index.html
 
 The documentation is for this package and its functions. For more information on 
-how Secret Store works, please refer to the [Parity wiki](https://openethereum.github.io/wiki). 
+how Secret Store works, please refer to the [OpenEthereum wiki](https://openethereum.github.io/wiki). 
 Most of the function descriptions have been copied from there.
 
 ## Quickstart
