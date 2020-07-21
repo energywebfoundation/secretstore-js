@@ -39,7 +39,7 @@ const secretstore = require("secretstore");
 
 // using the OpenEthereum's secretstore rpc module
 // should be used on your local node for trust reasons
-const sslac = new secretstore.SecretStoreLocalAPIClient("http://127.0.0.1:8545");
+const sslac = new secretstore.SecretStoreRpcApiClient("http://127.0.0.1:8545");
 sslac.<method>...
 
 // using the OpenEthereum's secretstore session module
@@ -50,11 +50,11 @@ sssc.<method>...
 Typescript
 ```typescript
 
-import {SecretStoreLocalAPIClient, SecretStoreSessionClient} from "secretstore";
+import {SecretStoreRpcApiClient, SecretStoreSessionClient} from "secretstore";
 
 // using the OpenEthereum's secretstore rpc module
 // should be used on your local node for trust reasons
-const sslac = new SecretStoreLocalAPIClient("http://127.0.0.1:8545");
+const sslac = new SecretStoreRpcApiClient("http://127.0.0.1:8545");
 sslac.<method>...
 
 // using the OpenEthereum's secretstore session module
@@ -68,7 +68,7 @@ If you wonder how to set up a Secret Store cluster, check out the official [conf
 
 ## Examples
 
-- You can see some examples amongst the [tests](test/secretstore.js).
+- You can see some examples amongst the [tests](test/secretstore.test.ts).
 - The official Parity Secret Store tutorial was reproduced with this client in this repo: https://github.com/ngyam/tutorial-secretstore-privatetx
 
 ## Tested with
@@ -96,7 +96,7 @@ yarn
 
 **ACHTUNG**: make sure to start the local secret store cluster first.
 
-Your Secret Store enabled Parity client binary has to be placed in the root folder of the project with the name `parity`. It is shown in the [official tutorial](https://openethereum.github.io/wiki/Secret-Store-Tutorial-1.html#1-enable-the-secret-store-feature-of-parity) how to compile with Secret Store enabled. Use latest master branch preferably.
+Your Secret Store enabled Parity/OpenEthereum client binary has to be placed in the root folder of the project with the name `parity`. It is shown in the [official tutorial](https://openethereum.github.io/wiki/Secret-Store-Tutorial-1.html#1-enable-the-secret-store-feature-of-parity) how to compile with Secret Store enabled. Use latest master branch preferably.
 
 Then:
 
