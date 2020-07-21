@@ -5,16 +5,16 @@
  * @class
  */
 export class SecretStoreSessionError extends Error {
-    response: string;
+    meta: any;
 
     /**
      * @constructor
      * @param {string} message The error message.
-     * @param {any} response The response object.
+     * @param {any} meta Some information object to help debugging
      */
-    constructor(message: string, response: any) {
+    constructor(message: string, meta: any) {
         super(message);
-        this.response = JSON.stringify(response);
+        this.meta = meta;
         this.name = 'SecretStoreSessionError';
     }
 }

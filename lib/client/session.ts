@@ -1,6 +1,6 @@
 /** @module client/session */
 
-import axios, { Method } from 'axios';
+import axios, { Method, AxiosError } from 'axios';
 import * as utils from '../utils';
 import { SecretStoreSessionError } from './error';
 import { LocalDocumentKey } from './local';
@@ -32,15 +32,23 @@ export class SecretStoreSessionClient {
     }
 
     private async _send<T>(method: Method, url: string, body?: string): Promise<T> {
-        const response = await axios({
-            url,
-            method,
-            data: body
-        });
-        if (response.status !== 200) {
-            throw new SecretStoreSessionError('Request failed.', response);
+        try {
+            const response = await axios({
+                url,
+                method,
+                data: body
+            });
+            return response.data as T;
+        } catch (error) {
+            if ((error as AxiosError).isAxiosError) {
+                const { response } = error as AxiosError;
+                throw new SecretStoreSessionError(
+                    `${response.statusText} (${response.status}): ${utils.removeEnclosingDQuotes(response.data)}`,
+                    response.config
+                );
+            }
+            throw error;
         }
-        return response.data as T;
     }
 
     /**

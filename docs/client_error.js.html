@@ -103,6 +103,7 @@
   <article>
     <pre class="prettyprint source linenums"><code>"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SecretStoreSessionError = void 0;
 /**
  * Thrown when an error has occured during the Secret Store session.
  *
@@ -113,11 +114,11 @@ class SecretStoreSessionError extends Error {
     /**
      * @constructor
      * @param {string} message The error message.
-     * @param {any} response The response object.
+     * @param {any} meta Some information object to help debugging
      */
-    constructor(message, response) {
+    constructor(message, meta) {
         super(message);
-        this.response = JSON.stringify(response);
+        this.meta = meta;
         this.name = 'SecretStoreSessionError';
     }
 }

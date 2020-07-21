@@ -2,6 +2,7 @@
 
 import * as ethers from 'ethers';
 import * as utils from '../utils';
+import { DocumentKeyShadows } from './session';
 
 export interface LocalDocumentKey {
     common_point: string;
@@ -77,11 +78,11 @@ export class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
      * @param {string} hexDocument Hex encoded document data.
+     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
      * @return {Promise<string>} The encrypted secret document as a hex encoded string.
      */
-    async encrypt(account: string, pwd: string, encryptedDocumentKey: string, hexDocument: string): Promise<string> {
+    async encrypt(account: string, pwd: string, hexDocument: string, encryptedDocumentKey: string): Promise<string> {
         return this._send<string>(
             'secretstore_encrypt',
             account,
@@ -97,15 +98,15 @@ export class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
      * @param {string} encryptedDocument The encrypted document data, returned by "encrypt" as hex string.
+     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
      * @return {Promise<string>} The decrypted secret document.
      */
     async decrypt(
         account: string,
         pwd: string,
-        encryptedDocumentKey: string,
-        encryptedDocument: string
+        encryptedDocument: string,
+        encryptedDocumentKey: string
     ): Promise<string> {
         return this._send<string>(
             'secretstore_decrypt',
@@ -125,27 +126,94 @@ export class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} decryptedSecret The hex-encoded decrypted secret portion of an encrypted document key.
-     * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
-     * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
      * @param {string} encryptedDocument Encrypted document data, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}, as hex string.
+     * @param {DocumentKeyShadows} documentKeyShadows The document shadows object, containing the portions of an encrypted document key:
+     * decrypted secret, common point and decrypt shadows.
      * @return {Promise<string>} The decrypted secret document.
      */
     async shadowDecrypt(
         account: string,
         pwd: string,
+        encryptedDocument: string,
+        documentKeyShadows: DocumentKeyShadows
+    ): Promise<string>;
+
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     *
+     * Document key can be obtained by
+     * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}.
+     * @param {string} decryptedSecret The hex-encoded decrypted secret portion of an encrypted document key.
+     * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
+     * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
+     * @return {Promise<string>} The decrypted secret document.
+     */
+    async shadowDecrypt(
+        account: string,
+        pwd: string,
+        encryptedDocument: string,
         decryptedSecret: string,
         commonPoint: string,
-        decryptShadows: string[],
-        encryptedDocument: string
+        decryptShadows: string[]
+    ): Promise<string>;
+
+    /**
+     * This method can be used to decrypt a document, encrypted by
+     * the [encrypt()]{@link SecretStoreLocalAPIClient#encrypt} method before.
+     *
+     * Document key can be obtained by
+     * a [document key shadow retrieval session]{@link https://openethereum.github.io/wiki/Secret-Store#document-key-shadow-retrieval-session}.
+     *
+     * @param {string} account The address of a SecretStore user.
+     * @param {string} pwd The password of the SecretStore user for the account given.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}.
+     * @param {string} decryptedSecretOrDocumentKeyShadows The hex-encoded decrypted secret portion or document shadows object of an encrypted document key.
+     * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
+     * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
+     * @return {Promise<string>} The decrypted secret document.
+     */
+    async shadowDecrypt(
+        account: string,
+        pwd: string,
+        encryptedDocument: string,
+        decryptedSecretOrDocumentKeyShadows: string | DocumentKeyShadows,
+        commonPoint?: string,
+        decryptShadows?: string[]
     ): Promise<string> {
+        if (!decryptedSecretOrDocumentKeyShadows) {
+            throw new Error('Document key portions were not supplied');
+        }
+        if (
+            typeof decryptedSecretOrDocumentKeyShadows === 'string' ||
+            decryptedSecretOrDocumentKeyShadows instanceof String
+        ) {
+            if (!commonPoint || !decryptShadows || decryptShadows.length === 0) {
+                throw new Error(
+                    `Not enough document key portions were supplied (${decryptedSecretOrDocumentKeyShadows},${commonPoint},${decryptShadows})`
+                );
+            }
+            return this._send<string>(
+                'secretstore_shadowDecrypt',
+                account,
+                pwd,
+                utils.ensure0x(decryptedSecretOrDocumentKeyShadows as string),
+                utils.ensure0x(commonPoint),
+                decryptShadows,
+                utils.ensure0x(encryptedDocument)
+            );
+        }
         return this._send<string>(
             'secretstore_shadowDecrypt',
             account,
             pwd,
-            utils.ensure0x(decryptedSecret),
-            utils.ensure0x(commonPoint),
-            decryptShadows,
+            utils.ensure0x((decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).decrypted_secret),
+            utils.ensure0x((decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).common_point),
+            (decryptedSecretOrDocumentKeyShadows as DocumentKeyShadows).decrypt_shadows,
             utils.ensure0x(encryptedDocument)
         );
     }

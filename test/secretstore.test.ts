@@ -1,9 +1,13 @@
-import { assert } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import * as chai from 'chai';
 import { keccak256 } from 'js-sha3';
 import { ethers } from 'ethers';
 
 import assets from './assets';
 import { SecretStoreSessionClient, SecretStoreLocalAPIClient, DocumentKeyShadows, LocalDocumentKey } from '../lib';
+
+chai.use(chaiAsPromised);
+const { assert, expect } = chai;
 
 const { alice, admin } = assets.accounts;
 const { alicepwd, adminpwd } = assets.passwords;
@@ -24,6 +28,16 @@ describe('Secret store correct inputs test', async () => {
     let dkey: LocalDocumentKey | string;
     let retrievedKey: string;
     let shadowRetrievedKey: DocumentKeyShadows;
+
+    it('should instantiate with correct params', async () => {
+        assert.exists(new SecretStoreLocalAPIClient(httpRpcAlice));
+    });
+
+    it('should fail to instantiate with invalid params', async () => {
+        assert.throws(() => new SecretStoreLocalAPIClient(undefined));
+        assert.throws(() => new SecretStoreSessionClient(undefined));
+        assert.throws(() => new SecretStoreSessionClient(''));
+    });
 
     it('should sign raw hash', async () => {
         docID = `0x${keccak256('lololol')}`;
@@ -58,6 +72,14 @@ describe('Secret store correct inputs test', async () => {
         assert.isNotEmpty(dkey);
     });
 
+    it('should fail to store document key with incorrect params', async () => {
+        expect(ssSession.storeDocumentKey(docID, signedDocID, undefined, (dkey as LocalDocumentKey).encrypted_point)).to
+            .be.rejected;
+        expect(ssSession.storeDocumentKey(docID, signedDocID, (dkey as LocalDocumentKey).common_point, undefined)).to.be
+            .rejected;
+        expect(ssSession.storeDocumentKey(docID, signedDocID, '', '')).to.be.rejected;
+    });
+
     it('should store the document key', async () => {
         const res = await ssSession.storeDocumentKey(
             docID,
@@ -89,6 +111,15 @@ describe('Secret store correct inputs test', async () => {
         assert.isNotEmpty(dkey);
     });
 
+    it('should not be able to generate same server and document key again', async () => {
+        try {
+            await ssSession.generateServerAndDocumentKey(docID, signedDocID, 1);
+        } catch (e) {
+            console.log(e);
+        }
+        expect(ssSession.generateServerAndDocumentKey(docID, signedDocID, 1)).to.be.rejected;
+    });
+
     it('should shadow retrieve document key', async () => {
         shadowRetrievedKey = await ssSession.shadowRetrieveDocumentKey(docID, signedDocID);
         assert.exists(shadowRetrievedKey);
@@ -103,13 +134,13 @@ describe('Secret store correct inputs test', async () => {
 
     it('should encrypt a document', async () => {
         hexDoc = `0x${Buffer.from('lololololol').toString('hex')}`;
-        encryptedDoc = await ss.encrypt(alice, alicepwd, retrievedKey, hexDoc);
+        encryptedDoc = await ss.encrypt(alice, alicepwd, hexDoc, retrievedKey);
         assert.exists(encryptedDoc);
         assert.isNotEmpty(encryptedDoc);
     });
 
     it('should decrypt a document', async () => {
-        const decryptedDoc = await ss.decrypt(alice, alicepwd, retrievedKey, encryptedDoc);
+        const decryptedDoc = await ss.decrypt(alice, alicepwd, encryptedDoc, retrievedKey);
         assert.exists(decryptedDoc);
         assert.isNotEmpty(decryptedDoc);
         assert.equal(decryptedDoc, hexDoc);
@@ -119,14 +150,50 @@ describe('Secret store correct inputs test', async () => {
         const decryptedDoc = await ss.shadowDecrypt(
             alice,
             alicepwd,
+            encryptedDoc,
             shadowRetrievedKey.decrypted_secret,
             shadowRetrievedKey.common_point,
-            shadowRetrievedKey.decrypt_shadows,
-            encryptedDoc
+            shadowRetrievedKey.decrypt_shadows
         );
+
+        const decryptedDoc2 = await ss.shadowDecrypt(alice, alicepwd, encryptedDoc, shadowRetrievedKey);
         assert.exists(decryptedDoc);
         assert.isNotEmpty(decryptedDoc);
         assert.equal(decryptedDoc, hexDoc);
+        assert.equal(decryptedDoc, decryptedDoc2);
+    });
+
+    it('should fail to shadow decrypt', async () => {
+        expect(
+            ss.shadowDecrypt(
+                alice,
+                alicepwd,
+                encryptedDoc,
+                shadowRetrievedKey.decrypted_secret,
+                undefined,
+                shadowRetrievedKey.decrypt_shadows
+            )
+        ).to.be.rejected;
+        expect(
+            ss.shadowDecrypt(
+                alice,
+                alicepwd,
+                encryptedDoc,
+                undefined,
+                shadowRetrievedKey.common_point,
+                shadowRetrievedKey.decrypt_shadows
+            )
+        ).to.be.rejected;
+        expect(
+            ss.shadowDecrypt(
+                alice,
+                alicepwd,
+                encryptedDoc,
+                shadowRetrievedKey.decrypted_secret,
+                shadowRetrievedKey.common_point,
+                []
+            )
+        ).to.be.rejected;
     });
 
     it('should schnorr sign a message', async () => {

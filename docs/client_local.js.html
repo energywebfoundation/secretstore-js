@@ -103,14 +103,27 @@
   <article>
     <pre class="prettyprint source linenums"><code>"use strict";
 /** @module client/local */
+var __createBinding = (this &amp;&amp; this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this &amp;&amp; this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this &amp;&amp; this.__importStar) || function (mod) {
     if (mod &amp;&amp; mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" &amp;&amp; Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SecretStoreLocalAPIClient = void 0;
 const ethers = __importStar(require("ethers"));
 const utils = __importStar(require("../utils"));
 /**
@@ -175,11 +188,11 @@ class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
      * @param {string} hexDocument Hex encoded document data.
+     * @param {string} encryptedDocumentKey Document key encrypted with requester's public key, as a hex string.
      * @return {Promise&lt;string>} The encrypted secret document as a hex encoded string.
      */
-    async encrypt(account, pwd, encryptedDocumentKey, hexDocument) {
+    async encrypt(account, pwd, hexDocument, encryptedDocumentKey) {
         return this._send('secretstore_encrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(hexDocument));
     }
     /**
@@ -188,11 +201,11 @@ class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
      * @param {string} encryptedDocument The encrypted document data, returned by "encrypt" as hex string.
+     * @param {string} encryptedDocumentKey The document key encrypted with requester’s public key, as hex string.
      * @return {Promise&lt;string>} The decrypted secret document.
      */
-    async decrypt(account, pwd, encryptedDocumentKey, encryptedDocument) {
+    async decrypt(account, pwd, encryptedDocument, encryptedDocumentKey) {
         return this._send('secretstore_decrypt', account, pwd, utils.ensure0x(encryptedDocumentKey), utils.ensure0x(encryptedDocument));
     }
     /**
@@ -204,14 +217,24 @@ class SecretStoreLocalAPIClient {
      *
      * @param {string} account The address of a SecretStore user.
      * @param {string} pwd The password of the SecretStore user for the account given.
-     * @param {string} decryptedSecret The hex-encoded decrypted secret portion of an encrypted document key.
+     * @param {string} encryptedDocument Encrypted document data, hex encoded, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}.
+     * @param {string} decryptedSecretOrDocumentKeyShadows The hex-encoded decrypted secret portion or document shadows object of an encrypted document key.
      * @param {string} commonPoint The hex-encoded common point portion of an encrypted document key.
      * @param {string[]} decryptShadows The hex-encoded encrypted point portions of an encrypted document key.
-     * @param {string} encryptedDocument Encrypted document data, returned by [encrypt()]{@link SecretStoreLocalAPIClient#encrypt}, as hex string.
      * @return {Promise&lt;string>} The decrypted secret document.
      */
-    async shadowDecrypt(account, pwd, decryptedSecret, commonPoint, decryptShadows, encryptedDocument) {
-        return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecret), utils.ensure0x(commonPoint), decryptShadows, utils.ensure0x(encryptedDocument));
+    async shadowDecrypt(account, pwd, encryptedDocument, decryptedSecretOrDocumentKeyShadows, commonPoint, decryptShadows) {
+        if (!decryptedSecretOrDocumentKeyShadows) {
+            throw new Error('Document key portions were not supplied');
+        }
+        if (typeof decryptedSecretOrDocumentKeyShadows === 'string' ||
+            decryptedSecretOrDocumentKeyShadows instanceof String) {
+            if (!commonPoint || !decryptShadows || decryptShadows.length === 0) {
+                throw new Error(`Not enough document key portions were supplied (${decryptedSecretOrDocumentKeyShadows},${commonPoint},${decryptShadows})`);
+            }
+            return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecretOrDocumentKeyShadows), utils.ensure0x(commonPoint), decryptShadows, utils.ensure0x(encryptedDocument));
+        }
+        return this._send('secretstore_shadowDecrypt', account, pwd, utils.ensure0x(decryptedSecretOrDocumentKeyShadows.decrypted_secret), utils.ensure0x(decryptedSecretOrDocumentKeyShadows.common_point), decryptedSecretOrDocumentKeyShadows.decrypt_shadows, utils.ensure0x(encryptedDocument));
     }
     /**
      *
