@@ -1,10 +1,16 @@
+/* eslint no-unused-expressions: 0 */
 import chaiAsPromised from 'chai-as-promised';
 import * as chai from 'chai';
 import { keccak256 } from 'js-sha3';
 import { ethers } from 'ethers';
 
 import assets from './assets';
-import { SecretStoreSessionClient, SecretStoreRpcApiClient, DocumentKeyPortions, ExternallyEncryptedDocumentKey } from '../lib';
+import {
+    SecretStoreSessionClient,
+    SecretStoreRpcApiClient,
+    DocumentKeyPortions,
+    ExternallyEncryptedDocumentKey
+} from '../lib';
 
 chai.use(chaiAsPromised);
 const { assert, expect } = chai;
@@ -73,10 +79,22 @@ describe('Secret store correct inputs test', async () => {
     });
 
     it('should fail to store document key with incorrect params', async () => {
-        expect(ssSession.storeDocumentKey(docID, signedDocID, undefined, (dkey as ExternallyEncryptedDocumentKey).encrypted_point)).to
-            .be.rejected;
-        expect(ssSession.storeDocumentKey(docID, signedDocID, (dkey as ExternallyEncryptedDocumentKey).common_point, undefined)).to.be
-            .rejected;
+        expect(
+            ssSession.storeDocumentKey(
+                docID,
+                signedDocID,
+                undefined,
+                (dkey as ExternallyEncryptedDocumentKey).encrypted_point
+            )
+        ).to.be.rejected;
+        expect(
+            ssSession.storeDocumentKey(
+                docID,
+                signedDocID,
+                (dkey as ExternallyEncryptedDocumentKey).common_point,
+                undefined
+            )
+        ).to.be.rejected;
         expect(ssSession.storeDocumentKey(docID, signedDocID, '', '')).to.be.rejected;
     });
 

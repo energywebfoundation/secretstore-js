@@ -1,3 +1,3 @@
-export * from './local';
+export * from './rpc';
 export * from './session';
 export * from './error';

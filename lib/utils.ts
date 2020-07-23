@@ -5,7 +5,7 @@
 import { AxiosResponse } from 'axios';
 
 /**
- * Removes leading "0x" pefix from a string if it has any.
+ * @description Removes leading "0x" pefix from a string if it has any.
  *
  * @param {string} val The input string.
  * @returns {string} The string without 0x prefix.
@@ -16,7 +16,7 @@ export function remove0x(val: string): string {
 }
 
 /**
- * Adds a leading "0x" prefix to a string if it doesn't have already.
+ * @description Adds a leading "0x" prefix to a string if it doesn't have already.
  *
  * @param {string} str The string
  */
@@ -25,7 +25,7 @@ export function ensure0x(str: string): string {
 }
 
 /**
- * Removes enclosing double quotes from a string. Used for formatting messages coming from the Secret Store nodes.
+ * @description Removes enclosing double quotes from a string. Used for formatting messages coming from the Secret Store nodes.
  *
  * @param {string} str The string to format.
  * @returns {string} The string without enclosing double quotes.
@@ -35,7 +35,7 @@ export function removeEnclosingDQuotes(str: string): string {
 }
 
 /**
- * Logs relevant information from a failed http response.
+ * @description Logs relevant information from a failed http response.
  *
  * @param {function(any[]): void} logFunction Log function to use with the error message.
  * @param {AxiosResponse} response The response object.
@@ -49,7 +49,7 @@ export function logFailedResponse(logFunction: (...vals: any[]) => void, respons
 }
 
 /**
- * Logs the error object. Only stringifies the input.
+ * @description Logs the error object. Only stringifies the input.
  *
  * @param {function(any[]): void} logFunction Log function to use with the error message.
  * @param {any} e Error object or message.

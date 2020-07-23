@@ -17,8 +17,8 @@
             "outputSourceFiles": true
         },
         "resources": {
-            "Parity Secret Store API,": "https://wiki.parity.io/JSONRPC-secretstore-module",
-            "Parity WIKI - Secret Store": "https://wiki.parity.io/Secret-Store"
+            "OpenEthereum Secret Store RPC API,": "https://openethereum.github.io/wiki/JSONRPC-secretstore-module",
+            "OpenEthereum WIKI - Secret Store": "https://openethereum.github.io/wiki/Secret-Store"
         }
     },
     "opts": {
