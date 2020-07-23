@@ -1,2 +1,2 @@
 export * from './client';
-export * as ssUtils from './utils';
+export * as utils from './utils';
