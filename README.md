@@ -1,4 +1,6 @@
 # EnergyWeb's Secret Store JS client 
+[![npm version](https://badge.fury.io/js/secretstore.svg)](https://www.npmjs.com/package/secretstore)
+
 Secret Store JS client, an [Npm package](https://www.npmjs.com/package/secretstore) for interacting with OpenEthereum's Secret Store `rpc` and `session` modules.
 Abstraction layer on top of the official 
 [secretstore RPC API](https://openethereum.github.io/wiki/JSONRPC-secretstore-module) and
